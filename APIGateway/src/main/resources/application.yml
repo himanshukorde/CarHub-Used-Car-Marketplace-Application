@@ -1,0 +1,49 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: APIGateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service-app
+          uri: lb://AUTHSERVICE
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<segment>.*), /${segment}
+
+        - id: car-inventory-service
+          uri: lb://CAR-INVENTORY
+          predicates:
+            - Path=/inventory/**
+          filters:
+            - RewritePath=/inventory/(?<segment>.*), /${segment}
+
+        - id: car-evaluation-service
+          uri: lb://CAR-EVALUATION-SERVICE
+          predicates:
+            - Path=/evaluation/**
+          filters:
+            - RewritePath=/evaluation/(?<segment>.*), /${segment}
+
+        - id: car-search-service
+          uri: lb://CAR-SEARCH-SERVICE
+          predicates:
+            - Path=/search/**
+          filters:
+            - RewritePath=/search/(?<segment>.*), /${segment}
+
+    client:
+      hostname: localhost  # This line belongs here under spring.cloud.client
+
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: false
+
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
